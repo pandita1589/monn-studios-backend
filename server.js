@@ -7,8 +7,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: '*', // Permite cualquier origen
-    credentials: true
+    origin: ['https://ganditai589.github.io', 'http://localhost:3000', '*'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
