@@ -1,22 +1,41 @@
-// server.js - Backend para monn Studios (Configuración Global)
+// server.js - Backend para Moon Studios (Configuración Global)
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 
 const app = express();
 
-// Middleware
+// CORS configurado correctamente para arreglar el error
 app.use(cors({
-    origin: '*', // Permite cualquier origen
-    credentials: true
+    origin: function (origin, callback) {
+        // Permitir cualquier origen para desarrollo
+        callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    optionsSuccessStatus: 200
 }));
+
+// Middleware adicional para CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
+
 app.use(express.json());
 
 // 🔗 TU CONNECTION STRING DE MONGODB ATLAS
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://fabian1234andre:GWOLQUQqWRu2MPZ9@cluster0.ttvffqo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Configuración de la base de datos
-const DB_NAME = 'monn_studios';
+const DB_NAME = 'moon_studios';
 const COLLECTION_NAME = 'global_config';
 const CONFIG_ID = 'global_countdown_config';
 
@@ -32,7 +51,7 @@ async function connectToMongoDB() {
         
         await client.connect();
         console.log('✅ ¡Conectado a MongoDB Atlas exitosamente!');
-        console.log('🌍 Backend listo para monn Studios');
+        console.log('🌍 Backend listo para Moon Studios');
         
         // Test de conexión
         await client.db(DB_NAME).admin().ping();
@@ -89,7 +108,7 @@ app.post('/api/config', ensureConnection, async (req, res) => {
             lastUpdate: new Date().toISOString(),
             updateCount: 1,
             isGlobal: true,
-            description: 'Configuración global para todos los visitantes de monn Studios'
+            description: 'Configuración global para todos los visitantes de Moon Studios'
         };
         
         // Obtener configuración existente para incrementar contador
@@ -177,7 +196,7 @@ app.get('/api/health', async (req, res) => {
             await client.db(DB_NAME).admin().ping();
             res.json({
                 status: 'ok',
-                service: 'monn Studios Global Config API',
+                service: 'Moon Studios Global Config API',
                 mongodb: 'connected',
                 timestamp: new Date().toISOString(),
                 message: '🚀 Backend funcionando correctamente'
@@ -185,7 +204,7 @@ app.get('/api/health', async (req, res) => {
         } else {
             res.status(503).json({
                 status: 'error',
-                service: 'monn Studios Global Config API',
+                service: 'Moon Studios Global Config API',
                 mongodb: 'disconnected',
                 timestamp: new Date().toISOString()
             });
@@ -193,7 +212,7 @@ app.get('/api/health', async (req, res) => {
     } catch (error) {
         res.status(503).json({
             status: 'error',
-            service: 'monn Studios Global Config API',
+            service: 'Moon Studios Global Config API',
             mongodb: 'error',
             error: error.message,
             timestamp: new Date().toISOString()
@@ -204,7 +223,7 @@ app.get('/api/health', async (req, res) => {
 // Página de info para el root
 app.get('/', (req, res) => {
     res.json({
-        service: '🚀 monn Studios - Global Configuration API',
+        service: '🚀 Moon Studios - Global Configuration API',
         version: '1.0.0',
         description: 'API para configuración global de countdown de Luna Net',
         status: 'running',
@@ -240,7 +259,7 @@ async function startServer() {
         if (connected) {
             app.listen(PORT, () => {
                 console.log('');
-                console.log('🎉 ¡monn Studios Backend iniciado exitosamente!');
+                console.log('🎉 ¡Moon Studios Backend iniciado exitosamente!');
                 console.log(`🌐 URL: http://localhost:${PORT}`);
                 console.log(`🏥 Health: http://localhost:${PORT}/api/health`);
                 console.log('');
@@ -256,6 +275,7 @@ async function startServer() {
                 console.log('   3. Sin login requerido');
                 console.log('');
                 console.log('✅ ¡Listo para configuración global de Luna Net!');
+                console.log('🌙 Moon Studios - Sistema global funcionando');
             });
         } else {
             console.error('❌ No se pudo iniciar - Error de conexión a MongoDB');
