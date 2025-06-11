@@ -5,23 +5,13 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS configurado correctamente para arreglar el error
-app.use(cors({
-    origin: function (origin, callback) {
-        // Permitir cualquier origen para desarrollo
-        callback(null, true);
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-    optionsSuccessStatus: 200
-}));
+app.use(cors());
 
-// Middleware adicional para CORS
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
     if (req.method === 'OPTIONS') {
         res.sendStatus(200);
     } else {
